@@ -42,6 +42,14 @@ FC 4      |>      120   |  60
 OUTPUT 2  |>       60   |  19        [These are the 19 classes from 0 to 18]
 ```
 
+# Loss function
+
+I chose cross entropy as that was used in the example network that was covered in the session.
+
+# Evaluation
+
+The correctness of the predictions are being done in the `test` function where I check the equality with the labels - both image and sum.
+
 # Logs
 
 ```
