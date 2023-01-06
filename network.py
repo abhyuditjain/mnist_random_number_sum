@@ -71,7 +71,7 @@ class Network(nn.Module):
     y = F.relu(y)
     y = self.output2(y) # 60 => 19
 
-    out2 = F.log_softmax(y)
+    out2 = F.log_softmax(y, dim=1)
 
     return out1, out2
 
@@ -99,21 +99,10 @@ class CustomDataset(datasets.MNIST):
       """
       Here I generate a random one hot encoding.
       """
-      x = torch.randint(0, 10, (10,)) # example output = tensor([9, 9, 6, 2, 5, 4, 6, 9, 5, 3])
+      x = torch.randint(0, 10, (1,)) # example output = tensor([8])
 
-			# F.one_hot(x, num_classes=10) gives the following, so I just choose the first one as everytime it's a random permutation
-			# I could not find a better way to do so.
-			#
-			#   tensor([[0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-			#     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-			#     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-			#     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-			#     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-			#     [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-			#     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-      #     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-      #     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-      #     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]])
+			# F.one_hot(x, num_classes=10) gives the following:
+			#   tensor([[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]])
       x = F.one_hot(x, num_classes=10)[0]
       return x
 
@@ -135,7 +124,7 @@ def train(model, device, train_loader, optimizer, epoch):
         total_loss = image_loss + sum_loss
         total_loss.backward()
         optimizer.step()
-        pbar.set_description(desc= f'EPOCH={epoch} Image loss={image_loss.item()} + Sum loss={sum_loss.item()} for batch_id={batch_idx}')
+        pbar.set_description(desc= f'EPOCH = {epoch} Image loss={image_loss.item()} + Sum loss={sum_loss.item()} for batch_id={batch_idx}')
 
 def test(model, device, test_loader):
     model.eval()
@@ -155,15 +144,17 @@ def test(model, device, test_loader):
 
     test_loss /= len(test_loader.dataset)
 
-    print('\nTest set: Average loss (images): {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('Test set: Average loss (images): {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
         test_loss, correct_images, len(test_loader.dataset),
         100. * correct_images / len(test_loader.dataset)))
-    print('\nTest set: Average loss (sums): {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('Test set: Average loss (sums): {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
         test_loss, correct_sums, len(test_loader.dataset),
         100. * correct_sums / len(test_loader.dataset)))
+    print()
 
 
 use_cuda = torch.cuda.is_available()
+
 device = torch.device("cuda" if use_cuda else "cpu")
 
 batch_size = 128
