@@ -100,9 +100,8 @@ class CustomDataset(datasets.MNIST):
       Here I generate a random one hot encoding.
       """
       x = torch.randint(0, 10, (1,)) # example output = tensor([8])
-
-			# F.one_hot(x, num_classes=10) gives the following:
-			#   tensor([[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]])
+      # F.one_hot(x, num_classes=10) gives the following:
+      #   tensor([[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]])
       x = F.one_hot(x, num_classes=10)[0]
       return x
 
